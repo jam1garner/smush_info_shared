@@ -1,5 +1,6 @@
 #![feature(const_fn)]
 #![feature(const_fn_union)]
+#![feature(const_if_match)]
 use std::sync::atomic::{AtomicU32, AtomicBool, Ordering};
 use serde::{Serialize, Deserialize};
 use std::fmt;
@@ -7,8 +8,12 @@ use std::fmt;
 mod atomic_f32;
 pub use atomic_f32::AtomicF32;
 
+mod atomic_arena_id;
+pub use atomic_arena_id::AtomicArenaId;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Info {
+    pub arena_id: AtomicArenaId,
     pub remaining_frames: AtomicU32,
     pub is_match: AtomicBool,
     pub stage: AtomicU32,
@@ -937,6 +942,25 @@ impl Stage {
 }
 
 impl Info {
+    pub const fn new() -> Self {
+        Self {
+            arena_id: AtomicArenaId::new(None),
+            remaining_frames: AtomicU32::new(u32::MAX),
+            is_match: AtomicBool::new(false),
+            stage: AtomicU32::new(Stage::None as u32),
+            players: [
+                Player::new(),
+                Player::new(),
+                Player::new(),
+                Player::new(),
+                Player::new(),
+                Player::new(),
+                Player::new(),
+                Player::new()
+            ]
+        }
+    }
+
     pub fn remaining_frames(&self) -> u32 {
         self.remaining_frames.load(Ordering::SeqCst)
     }
@@ -1026,6 +1050,7 @@ mod shared_tests {
     #[test]
     fn stage_test() {
         const TEST_INFO: Info = Info {
+            arena_id: AtomicArenaId::new(Some([b'A', b'A', b'A', b'A', b'A'])),
             is_match: AtomicBool::new(true),
             remaining_frames: AtomicU32::new(3),
             stage: AtomicU32::new(Stage::Plankton as u32),

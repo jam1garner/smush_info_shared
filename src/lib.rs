@@ -25,7 +25,8 @@ pub struct Player {
     pub character: AtomicU32,
     pub stocks: AtomicU32,
     pub damage: AtomicF32,
-    pub is_cpu: AtomicBool
+    pub is_cpu: AtomicBool,
+    pub skin: AtomicU32
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -987,7 +988,8 @@ impl Player {
             character: AtomicU32::new(Character::None as u32),
             damage: AtomicF32::new(0.),
             stocks: AtomicU32::new(0),
-            is_cpu: AtomicBool::new(false)
+            is_cpu: AtomicBool::new(false),
+            skin: AtomicU32::new(0)
         }
     }
 
@@ -1012,6 +1014,9 @@ impl Player {
 
     pub fn is_cpu(&self) -> bool {
         self.is_cpu.load(Ordering::SeqCst)
+    }
+    pub fn skin(&self) -> u32 {
+        self.skin.load(Ordering::SeqCst)
     }
 }
 

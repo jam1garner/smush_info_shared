@@ -962,6 +962,10 @@ impl Info {
         }
     }
 
+    pub fn arena_id(&self) -> Option<String> {
+        self.arena_id.load_string(Ordering::SeqCst)
+    }
+
     pub fn remaining_frames(&self) -> u32 {
         self.remaining_frames.load(Ordering::SeqCst)
     }

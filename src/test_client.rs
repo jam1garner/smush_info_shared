@@ -1,4 +1,4 @@
-use smush_discord_shared::Info;
+use smush_info_shared::Info;
 use std::net::{TcpStream, IpAddr};
 use std::io::{BufRead, BufReader};
 
